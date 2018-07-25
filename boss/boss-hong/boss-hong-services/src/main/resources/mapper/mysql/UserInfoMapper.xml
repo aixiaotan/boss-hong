@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boss.hong.shop.mapper.UserInfoMapper">
+  <select id="getUserInfo" resultType="com.boss.hong.shop.entity.UserInfoDO" parameterType="java.lang.Integer">
+      SELECT s.id as id,
+			s.login_phone_number as loginPhoneNumber,
+			s.wechat_id as wechatId,
+			s.wechat_user_info as wechatUserInfo
+	 from tb_fdb_login_user s  
+	 where id = #{id,jdbcType=INTEGER}
+  </select>
+</mapper>

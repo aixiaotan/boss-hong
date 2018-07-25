@@ -1,0 +1,14 @@
+server:
+  port: 8000
+spring:
+  application:
+    name: Gateway
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:1111/eureka/
+zuul:
+  routes:
+    user: 
+      path: /boss-hong/**
+      service-id: boss-hong

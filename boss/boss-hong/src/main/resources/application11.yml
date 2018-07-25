@@ -1,0 +1,33 @@
+server:
+  port: 2000
+  tomcat:
+    uri-encoding: UTF-8
+spring:
+  application:
+    name: boss-hong
+  datasource:
+    url: jdbc:mysql://10.0.4.74:3306/lmstest?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true
+    username: test
+    password: test123456
+    driver-class-name: com.mysql.jdbc.Driver
+  redis:
+    database: 0
+    host: 10.0.4.71
+    port: 6379
+    password: 
+    pool:
+      max-active: 8
+      max-wait: -1
+      max-idle: 0
+    timeout: 0
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:1111/eureka/
+swagger2:
+  scan:
+    package:
+      path:
+logging:
+  level:
+    com.xiaomubiao.core.user.mapper: DEBUG
