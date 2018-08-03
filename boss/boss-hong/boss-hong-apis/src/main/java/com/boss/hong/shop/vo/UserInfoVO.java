@@ -2,7 +2,7 @@ package com.boss.hong.shop.vo;
 
 import java.util.Date;
 
-import com.boss.common.dto.AbstractDTO;
+import com.boss.common.dto.common.AbstractDTO;
 
 public class UserInfoVO extends AbstractDTO{
 

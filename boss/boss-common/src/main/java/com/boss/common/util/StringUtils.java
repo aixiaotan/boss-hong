@@ -7,6 +7,10 @@ public class StringUtils {
 		return null == str || "".equals(str);
 	}
 	
+	public static boolean isBlank(String str) {
+		return null == str || "".equals(str);
+	}
+	
 	public static boolean isNotEmpty(String str) {
 		return !isEmpty(str);
 	}

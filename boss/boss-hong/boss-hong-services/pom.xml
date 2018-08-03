@@ -27,9 +27,36 @@
 			<artifactId>boss-hong-apis</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<!-- 验证码生成 -->
+		<dependency>
+			<groupId>com.github.penggle</groupId>
+			<artifactId>kaptcha</artifactId>
+			<version>2.3.2</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>javax.servlet-api</artifactId>
+					<groupId>javax.servlet</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
 	</dependencies>
 
 	<build>
+         <plugins>
+             <!-- define the project compile level -->
+             <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-compiler-plugin</artifactId>
+                 <!-- <version>2.3.2</version> -->
+                 <configuration>
+                     <source>1.7</source>
+                     <target>1.7</target>
+                 </configuration>
+             </plugin>
+         </plugins>
+     </build>
+<!-- 	<build>
 		<finalName>${project.name}</finalName>
 		<resources>
 			<resource>
@@ -44,6 +71,9 @@
 				</includes>
 			</resource>
 		</resources>
+
+	</build> -->
+</project>
 		<!--<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -73,5 +103,3 @@
 				</configuration>
 			</plugin>
 		</plugins>-->
-	</build>
-</project>

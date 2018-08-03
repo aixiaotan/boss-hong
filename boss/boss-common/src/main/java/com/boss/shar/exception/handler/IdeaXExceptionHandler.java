@@ -4,8 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.annotation.ControllerAdvice;
 
-import com.boss.common.dto.ResponseCode;
-import com.boss.common.dto.ResponseData;
+import com.boss.common.dto.common.ResponseCode;
+import com.boss.common.dto.common.ResponseData;
 import com.boss.shar.exception.IdeaXException;
 
 @ControllerAdvice

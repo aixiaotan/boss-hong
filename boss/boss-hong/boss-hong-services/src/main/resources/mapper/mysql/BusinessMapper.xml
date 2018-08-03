@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.boss.hong.base.mapper.BusinessMapper">
+
+	<select id="listCity" resultType="com.boss.common.dto.common.CityDto">
+		SELECT 
+			c.cityid,(CASE WHEN c.cityname ='市辖区' THEN p.provincename ELSE c.cityname END)cityname 
+		FROM tb_sys_city c
+		LEFT JOIN tb_sys_province p on c.provinceid=p.provinceid
+ 		WHERE c.cityname not in('市','县')
+		ORDER BY CONVERT(cityname USING gbk ) ASC
+	</select>
+	
+	<select id="listSysDist"  parameterType="java.lang.String" resultType="com.boss.common.dto.common.SysDistDto">
+    select 
+    	s.id AS id,
+		s.PID AS pid,
+		s.DATATYPE AS dataType,
+		s.DATACODE AS dataCode,
+		s.DATAVALUE AS dataValue,
+		s.SORTNO AS sortNo,
+		s.STATUS AS status,
+		s.DATADESC AS dataDesc
+    from tb_sys_dist s
+    where s.DATATYPE in
+         <foreach collection="list" item="dataType" index="index"  open="(" close=")" separator=",">  
+            #{dataType}  
+        </foreach>    
+  </select>
+	
+</mapper>

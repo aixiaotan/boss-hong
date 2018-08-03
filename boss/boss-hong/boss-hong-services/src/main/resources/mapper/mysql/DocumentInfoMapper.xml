@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.boss.hong.document.mapper.DocumentInfoMapper" >
+  <update id="updateBatchDocumentInfo" parameterType="java.util.List">
+        update tb_fdb_document_info
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="id_foreign_key =case" suffix="end,">
+                 <foreach collection="list" item="item" >
+                     <if test="item.idForeignKey !=null and item.idForeignKey != -1">
+                         when id=#{item.id} then #{item.idForeignKey}
+                     </if>
+                 </foreach>
+            </trim>
+            <trim prefix="row_no =case" suffix="end,">
+                 <foreach collection="list" item="item" >
+                     <if test="item.idForeignKey !=null and item.idForeignKey != -1">
+                         when id=#{item.id} then #{item.rowNo}
+                     </if>
+                 </foreach>
+            </trim>
+            <trim prefix="updated_time =case" suffix="end,">
+                 <foreach collection="list" item="item" >
+                     <if test="item.idForeignKey !=null and item.idForeignKey != -1">
+                         when id=#{item.id} then #{item.updatedTime}
+                     </if>
+                 </foreach>
+            </trim>
+        </trim>
+         <where>
+            <foreach collection="list" separator="or" item="item">
+                id = #{item.id}
+            </foreach>
+        </where>
+
+   </update>
+</mapper>

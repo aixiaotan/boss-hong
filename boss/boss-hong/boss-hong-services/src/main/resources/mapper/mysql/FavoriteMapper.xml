@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.boss.hong.favorite.mapper.FavoriteMapper" >
+  
+  
+	<select id="getTodaySendCardCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		select count(relation_id) 
+		  from tb_fdb_favorite t 
+		 where t.delivered_to_me = '01' 
+		   and t.deliver_user = #{deliverUser}
+		   and t.created_time between date_format(NOW(), '%Y-%c-%d 00:00:00' ) and date_format(NOW(), '%Y-%c-%d 23:59:59' )
+  	</select>
+  	
+	<select id="getFavCount" resultType="java.lang.Integer" parameterType="com.boss.common.dto.favorite.FavoriteDto">
+		select count(*) 
+		from tb_fdb_favorite t 
+		where t.delivered_to_me = #{deliveredToMe}
+		and t.login_user_id = #{loginUserId}
+		and t.favorite_type = #{favoriteType}
+		<if test='relationId != null'>
+			and t.relation_Id = #{relationId}
+		</if>
+		<if test='isToday != null and isToday == "1" '>
+			and t.created_time between date_format(NOW(), '%Y-%c-%d 00:00:00' ) and date_format(NOW(), '%Y-%c-%d 23:59:59' )
+		</if>
+  </select>
+  
+    <select id="listOutlineByFavorite" parameterType="com.boss.hong.favorite.entity.FavoriteDO" resultType="com.boss.common.dto.shop.OutlineDto">
+	  	select b.updated_time as createdTime,
+	  		   b.id as favoriteId,
+			   a.id as id,
+			   a.outline_Content as outlineContent
+	  	from tb_fdb_outline a ,
+	  	tb_fdb_favorite b 
+	  	where a.id = b.relation_id 
+	  	<if test="loginUserId != null">
+			and b.login_user_id = #{loginUserId} 
+		</if>
+	  	<if test="favoriteType != null and favoriteType != '' ">
+			and b.favorite_type = #{favoriteType} 
+		</if>
+	  	<if test="deliveredToMe != null and deliveredToMe != '' ">
+			and b.delivered_to_me = #{deliveredToMe} 
+		</if>
+	  	order by b.id DESC
+  </select>
+    <select id="listFavoriteShopCard" parameterType="com.boss.hong.favorite.entity.FavoriteDO" resultType="com.boss.common.dto.shop.ShopDto">
+	  	select  a.id as id, 
+	  			b.updated_time as createdTime, 
+	  			b.id as favoriteId,
+      			a.login_user_id as loginUserId, 
+      			a.shop_name as shopName, 
+      			a.user_name as userName, 
+      			a.city_code as cityCode, 
+      			a.company_name as companyName, 
+      			a.wechat_id as wechatId, 
+      			a.phone_number as phoneNumber, 
+      			a.is_publicity as isPublicity, 
+      			a.transpond_times as transpondTimes
+	  	from tb_fdb_shop a ,
+	  	tb_fdb_favorite b 
+	  	where a.id = b.relation_id 
+	  	<if test="loginUserId != null">
+			and b.login_user_id = #{loginUserId} 
+		</if>
+	  	<if test="favoriteType != null and favoriteType != '' ">
+			and b.favorite_type = #{favoriteType} 
+		</if>
+	  	<if test="deliveredToMe != null and deliveredToMe != '' ">
+			and b.delivered_to_me = #{deliveredToMe} 
+		</if>
+	  	order by b.id DESC
+  </select>
+  
+  <sql id="Shop_Column" >
+  	s.id AS id,
+	s.created_time AS createdTime,
+	s.updated_time AS updatedTime,
+	s.login_user_id AS loginUserId,
+	s.shop_name AS shopName,
+	s.user_name AS userName,
+	s.city_code AS cityCode,
+	s.company_name AS companyName,
+	s.wechat_id AS wechatId,
+	s.phone_number AS phoneNumber,
+	s.is_publicity AS isPublicity,
+	s.transpond_times AS transpondTimes,
+	b.created_time AS favTime,
+	b.id as favoriteId
+  </sql>
+    <select id="listShopByName" parameterType="java.lang.String" resultType="com.boss.common.dto.shop.ShopDto">
+	  	SELECT DISTINCT a.*
+			FROM
+				(
+					SELECT
+						<include refid="Shop_Column" />
+					FROM
+						tb_fdb_shop s,
+						tb_fdb_favorite b,
+						tb_fdb_login_user u
+					WHERE s.id = b.relation_id
+					  AND s.shop_name LIKE CONCAT('%', #{name}, '%')
+					  AND b.login_user_id = u.id
+					  AND u.wechat_id = #{wechatId}
+					  AND b.favorite_type = '01'
+					UNION
+						SELECT
+							<include refid="Shop_Column" />
+						FROM
+							tb_fdb_shop s,
+							tb_fdb_favorite b,
+							tb_fdb_login_user u
+						WHERE s.id = b.relation_id
+						  AND b.login_user_id = u.id
+					 	  AND u.wechat_id = #{wechatId}
+						  AND b.favorite_type = '01'
+						  AND s.company_name LIKE CONCAT('%', #{name}, '%')
+				) a
+			ORDER BY
+				a.favTime DESC
+  </select>
+  
+  <sql id="Outline_Column" >
+    o.id AS id,o.shop_id AS shopId,o.created_time AS createdTime,o.updated_time AS updatedTime,
+	o.outline_Content AS outlineContent,b.created_time AS favTime,b.id AS favoriteId
+  </sql>
+  
+    <select id="listOutlineByName" parameterType="java.lang.String" resultType="com.boss.common.dto.shop.OutlineDto">
+	  	SELECT DISTINCT
+					a.*
+				FROM
+					(
+						SELECT
+							<include refid="Outline_Column" />
+						FROM
+							tb_fdb_shop s,
+							tb_fdb_outline o,
+							tb_fdb_favorite b,
+							tb_fdb_login_user u
+						WHERE
+							s.shop_name LIKE CONCAT('%', #{name}, '%')
+						AND o.shop_id = s.id
+						AND b.relation_id = o.id
+						AND b.login_user_id = u.id
+					 	AND u.wechat_id = #{wechatId}
+						AND b.favorite_type = '03'
+						UNION
+							SELECT
+								<include refid="Outline_Column" />
+							FROM
+								tb_fdb_shop s,
+								tb_fdb_outline o,
+								tb_fdb_favorite b,
+								tb_fdb_login_user u
+							WHERE
+								s.company_name LIKE CONCAT('%', #{name}, '%')
+							AND o.shop_id = s.id
+							AND b.relation_id = o.id
+							AND b.login_user_id = u.id
+					 	  	AND u.wechat_id = #{wechatId}
+							AND b.favorite_type = '03'
+					) a
+				ORDER BY
+					a.favTime DESC
+  </select>
+  
+</mapper>

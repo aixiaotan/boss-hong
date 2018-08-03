@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.boss.hong.shop.mapper.ShopMapper" >
+  
+   <insert id ="insertShopLabelBatch" parameterType="java.util.List" >
+        insert into tb_fdb_label
+        (created_time, updated_time, shop_id, shop_label)
+        values
+        <foreach collection ="list" item="shopLabel" separator =",">
+            (
+            #{shopLabel.createdTime,jdbcType=TIMESTAMP}, 
+            #{shopLabel.updatedTime,jdbcType=TIMESTAMP}, 
+      		#{shopLabel.shopId,jdbcType=INTEGER}, 
+      		#{shopLabel.shopLabel,jdbcType=VARCHAR}
+      		)
+        </foreach >
+   </insert >
+   
+  <insert id="insertShopAndReturnId" useGeneratedKeys="true" keyProperty="id" parameterType="com.boss.hong.shop.entity.ShopDO">
+      insert into tb_fdb_shop (id, created_time, updated_time, 
+      login_user_id, shop_name, user_name, 
+      city_code, company_name, wechat_id, 
+      phone_number, is_publicity, transpond_times
+      )
+    values (default, #{createdTime,jdbcType=TIMESTAMP}, #{updatedTime,jdbcType=TIMESTAMP}, 
+      #{loginUserId,jdbcType=INTEGER}, #{shopName,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, 
+      #{cityCode,jdbcType=VARCHAR}, #{companyName,jdbcType=VARCHAR}, #{wechatId,jdbcType=VARCHAR}, 
+      #{phoneNumber,jdbcType=VARCHAR}, #{isPublicity,jdbcType=VARCHAR}, #{transpondTimes,jdbcType=INTEGER}
+      )
+  </insert>
+  
+  <select id="countOutlineByShopId" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+      select count(shop_id) from tb_fdb_outline where shop_id = #{shopId,jdbcType=INTEGER}
+  </select>
+  
+  <select id="getShopVisitCount" resultType="java.lang.Integer" parameterType="com.boss.hong.shop.entity.VisitRecordDO">
+      select count(relation_id) from tb_fdb_visit_record where visit_type = #{visitType,jdbcType=INTEGER} and relation_id = #{relationId}
+  </select>
+  
+  <insert id="insertOutlineAndReturnId" useGeneratedKeys="true" keyProperty="id" parameterType="com.boss.hong.shop.entity.OutlineDO">
+      insert into 
+      tb_fdb_outline 
+		      (
+		      id, 
+		      created_time, 
+		      updated_time, 
+		      shop_id, 
+		      outline_content
+		      )
+    values (
+		  default, 
+		  #{createdTime,jdbcType=TIMESTAMP}, 
+		  #{updatedTime,jdbcType=TIMESTAMP}, 
+		  #{shopId,jdbcType=INTEGER}, 
+		  #{outlineContent,jdbcType=VARCHAR}
+    )
+  </insert>
+  
+  <select id="listOutlineByShop" parameterType="com.boss.hong.shop.entity.ShopDO" resultType="com.boss.common.dto.shop.OutlineDto">
+  	SELECT p.id,
+  		p.shop_id shopId,
+  		p.outline_content outlineContent
+  	FROM tb_fdb_outline p
+	LEFT JOIN tb_fdb_shop s ON p.shop_id=s.id
+	WHERE 1=1 
+	
+	<!-- 根据国标码查询大纲，按照国标码的前四位(精确到城市)模糊匹配 -->
+	<if test="cityCode != null and cityCode != ''">
+		AND s.city_code like CONCAT(left(#{cityCode},4),'%')
+	</if>
+	
+	ORDER BY p.id DESC 
+  </select>
+  
+  <select id="listLabelByShopId" parameterType="java.lang.Integer" resultType="com.boss.common.dto.shop.LabelDto">
+  	SELECT
+		l.id 			as id ,
+		l.created_time 	as createdTime,
+		l.updated_time 	as updatedTime,
+		l.shop_id 		as shopId,
+		l.shop_label 	as shopLabel,
+		d.DATAVALUE 	as shopLabelName
+	FROM
+		tb_fdb_label l,
+		tb_sys_dist d
+	WHERE
+		l.shop_id = #{shopId}
+	AND l.shop_label = d.DATACODE
+	ORDER BY l.id DESC 
+  </select>
+  
+</mapper>

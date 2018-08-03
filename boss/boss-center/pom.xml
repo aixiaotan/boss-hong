@@ -12,6 +12,7 @@
 	<artifactId>boss-center</artifactId>
 	<packaging>jar</packaging>
 	<name>boss-center</name>
+	<version>0.0.1-SNAPSHOT</version>
 	<description>boss-center</description>
 
 	<properties>
@@ -33,7 +34,26 @@
 		</dependency>
 	</dependencies>
 
-	<build>
+
+
+
+     <build>
+         <plugins>
+             <!-- define the project compile level -->
+            <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-compiler-plugin</artifactId>
+                 <!-- <version>2.3.2</version> -->
+                 <configuration>
+                     <source>1.7</source>
+                     <target>1.7</target>
+                 </configuration>
+            </plugin>
+         </plugins>
+         <!-- <finalName>boss-ceter</finalName> -->
+     </build>
+
+<!-- 	<build>
 		<finalName>${project.name}</finalName>
 		<resources>
 			<resource>
@@ -77,7 +97,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
-	</build>
+	</build> -->
 
 
 </project>
